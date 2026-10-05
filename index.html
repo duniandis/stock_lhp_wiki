@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock LHP PT WIKI</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#27213a;background:#f6f3fc}
+*{box-sizing:border-box} body{margin:0}
+header{background:linear-gradient(115deg,#44247e,#7852bc);color:#fff;padding:30px 20px}
+main{max-width:1180px;margin:auto;padding:22px 15px}
+h1{font-size:clamp(23px,4vw,34px);margin:0} header p{margin:8px 0 0;opacity:.9}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card,section{background:#fff;border:1px solid #e9e1f4;border-radius:15px;box-shadow:0 4px 18px #42217b0d;padding:20px}
+.card span{color:#746987;font-size:14px}.card strong{display:block;color:#502b89;font-size:clamp(22px,3vw,32px);margin-top:8px}
+.card small{font-size:12px;color:#746987}
+section{margin-top:20px} h2{margin:0 0 14px;font-size:20px;color:#44247e}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+input{padding:10px;border:1px solid #d5c7e9;border-radius:8px;max-width:100%;flex:1;min-width:220px}
+.tablewrap{overflow:auto;border-radius:10px;border:1px solid #eee9f4}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:720px}
+th,td{padding:11px 10px;text-align:left;border-bottom:1px solid #eee9f4}
+th{background:#f0eafa;white-space:nowrap;color:#44247e}
+td.num,th.num{text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.total td{font-weight:700;background:#faf8fd}
+#status{font-size:13px;color:#716881}
+@media(max-width:650px){.summary{grid-template-columns:1fr}.card{padding:15px}.card strong{font-size:26px}section{padding:14px}}
+</style>
+</head>
+<body>
+<header><main style="padding:0"><h1>Stock LHP PT WIKI</h1><p>Stock LHP, pemiliran dan detail dokumen pengangkutan</p></main></header>
+<main>
+  <div class="summary">
+    <div class="card"><span>Stock LHP</span><strong id="stockVol">—</strong><small id="stockBtg">— batang</small></div>
+    <div class="card"><span>Pemiliran</span><strong id="pemVol">—</strong><small id="pemBtg">— batang</small></div>
+  </div>
+
+  <section>
+    <h2>Stock LHP per Jenis</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Jenis Kayu</th><th class="num">40–49 BTG</th><th class="num">40–49 VOL</th><th class="num">50–59 BTG</th><th class="num">50–59 VOL</th><th class="num">60+ BTG</th><th class="num">60+ VOL</th><th class="num">Total BTG</th><th class="num">Total VOL</th></tr></thead>
+      <tbody id="stockRows"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Pemiliran per Jenis</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Jenis Kayu</th><th class="num">40–49 BTG</th><th class="num">40–49 VOL</th><th class="num">50–59 BTG</th><th class="num">50–59 VOL</th><th class="num">60+ BTG</th><th class="num">60+ VOL</th><th class="num">Total BTG</th><th class="num">Total VOL</th></tr></thead>
+      <tbody id="pemRows"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="toolbar">
+      <h2 style="margin:0">Detail Dokumen Pengangkutan</h2>
+      <span id="status">Memuat data...</span>
+    </div>
+    <div class="toolbar"><input id="filter" type="search" placeholder="Cari no seri, tanggal atau tujuan..."><span id="count"></span></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>No.</th><th>No. Seri</th><th>Tanggal</th><th class="num">BTG</th><th class="num">Volume (m³)</th><th>Tujuan</th></tr></thead>
+      <tbody id="detailRows"></tbody>
+    </table></div>
+  </section>
+</main>
+<script>
+function parseCSV(s){s=s.replace(/^\uFEFF/,'');let rows=[],row=[],field='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(q&&s[i+1]==='"'){field+='"';i++}else q=!q}else if(c===','&&!q){row.push(field);field=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&s[i+1]==='\n')i++;row.push(field);if(row.some(x=>x!==''))rows.push(row);row=[];field=''}else field+=c}row.push(field);if(row.some(x=>x!==''))rows.push(row);let h=rows.shift()||[];return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]??''])))}
+const $=id=>document.getElementById(id);
+const vol=v=>Number(v||0).toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const btg=v=>Number(v||0).toLocaleString('id-ID',{maximumFractionDigits:0});
+let details=[];
+function makeJenisRows(rows,target){
+  $(target).replaceChildren(...rows.map(r=>{
+    let tr=document.createElement('tr');
+    if(r.jenis.startsWith('TOTAL')) tr.className='total';
+    let vals=[r.jenis,btg(r.btg_40_49),vol(r.vol_40_49),btg(r.btg_50_59),vol(r.vol_50_59),btg(r.btg_60_up),vol(r.vol_60_up),btg(r.total_btg),vol(r.total_vol)];
+    vals.forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i>0)td.className='num';tr.append(td)});
+    return tr;
+  }));
+}
+function renderDetails(){
+  let q=$('filter').value.toLowerCase();
+  let shown=details.filter(r=>[r.no,r.no_seri,r.tanggal,r.btg,r.volume,r.tujuan].join(' ').toLowerCase().includes(q));
+  $('detailRows').replaceChildren(...shown.map(r=>{
+    let tr=document.createElement('tr');
+    [r.no,r.no_seri,r.tanggal,btg(r.btg),vol(r.volume),r.tujuan].forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i===3||i===4)td.className='num';tr.append(td)});
+    return tr;
+  }));
+  $('count').textContent=`${shown.length} dokumen`;
+}
+$('filter').addEventListener('input',renderDetails);
+(async()=>{
+ try{
+   let res=await fetch('stock_lhp_wiki.csv?v='+Date.now(),{cache:'no-store'});
+   if(!res.ok) throw Error('HTTP '+res.status);
+   let data=parseCSV(await res.text());
+   let stock=data.filter(r=>r.tipe==='STOCK');
+   let pem=data.filter(r=>r.tipe==='PEMILIRAN');
+   details=data.filter(r=>r.tipe==='DETAIL');
+   let st=stock.find(r=>r.jenis==='TOTAL'), pm=pem.find(r=>r.jenis==='TOTAL PEMILIRAN');
+   if(st){$('stockVol').textContent=vol(st.total_vol)+' m³';$('stockBtg').textContent=btg(st.total_btg)+' batang'}
+   if(pm){$('pemVol').textContent=vol(pm.total_vol)+' m³';$('pemBtg').textContent=btg(pm.total_btg)+' batang'}
+   makeJenisRows(stock,'stockRows'); makeJenisRows(pem,'pemRows'); renderDetails();
+   $('status').textContent='Data berhasil dimuat';
+ }catch(e){$('status').textContent='Gagal memuat data: '+e.message;console.error(e)}
+})();
+</script>
+</body></html>
