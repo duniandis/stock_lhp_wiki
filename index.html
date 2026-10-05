@@ -92,7 +92,10 @@ function renderDetails(){
 $('filter').addEventListener('input',renderDetails);
 (async()=>{
  try{
-   let res=await fetch('stock_lhp_wiki.csv?v='+Date.now(),{cache:'no-store'});
+   let res=await fetch(
+  'https://raw.githubusercontent.com/duniandis/data_apk/main/stock_lhp_wiki.csv?v='+Date.now(),
+  {cache:'no-store'}
+);
    if(!res.ok) throw Error('HTTP '+res.status);
    let data=parseCSV(await res.text());
    let stock=data.filter(r=>r.tipe==='STOCK');
