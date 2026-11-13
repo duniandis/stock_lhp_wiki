@@ -8,7 +8,7 @@
 :root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#27213a;background:#f6f3fc}
 *{box-sizing:border-box} body{margin:0}
 header{background:linear-gradient(115deg,#44247e,#7852bc);color:#fff;padding:30px 20px}
-main{max-width:1180px;margin:auto;padding:22px 15px}
+.header-content{display:flex;align-items:center;gap:18px}.header-logo{width:76px;height:76px;object-fit:contain;flex-shrink:0}main{max-width:1180px;margin:auto;padding:22px 15px}
 h1{font-size:clamp(23px,4vw,34px);margin:0} header p{margin:8px 0 0;opacity:.9}
 .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .card,section{background:#fff;border:1px solid #e9e1f4;border-radius:15px;box-shadow:0 4px 18px #42217b0d;padding:20px}
@@ -25,11 +25,11 @@ td.num,th.num{text-align:right;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 .total td{font-weight:700;background:#faf8fd}
 #status{font-size:13px;color:#716881}
-@media(max-width:650px){.summary{grid-template-columns:1fr}.card{padding:15px}.card strong{font-size:26px}section{padding:14px}}
+@media(max-width:650px){.header-logo{width:56px;height:56px}.header-content{gap:12px}.summary{grid-template-columns:1fr}.card{padding:15px}.card strong{font-size:26px}section{padding:14px}}
 </style>
 </head>
 <body>
-<header><main style="padding:0"><h1>Stock LHP PT WIKI</h1><p>Stock LHP, pemiliran dan detail dokumen pengangkutan</p></main></header>
+<header><main style="padding:0" class="header-content"><img class="header-logo" src="LOGO.png" alt="Logo PT WIKI"><div><h1>Stock LHP PT WIKI</h1><p>Stock LHP, pemiliran dan detail dokumen pengangkutan</p></div></main></header>
 <main>
   <div class="summary">
     <div class="card"><span>Stock Fisik</span><strong id="fisikVol">—</strong><small id="fisikBtg">— batang</small></div>
