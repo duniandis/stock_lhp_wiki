@@ -23,6 +23,12 @@ th,td{padding:11px 10px;text-align:left;border-bottom:1px solid #eee9f4}
 th{background:#f0eafa;white-space:nowrap;color:#44247e}
 td.num,th.num{text-align:right;white-space:nowrap}
 tr:last-child td{border-bottom:0}
+.grouped-head th{text-align:center;vertical-align:middle;border:1px solid #d8cbea;padding:9px 8px}
+.grouped-head tr:first-child th{background:#e9e0f7;font-weight:700}
+.grouped-head tr:nth-child(2) th{background:#f0eafa}
+.grouped-head th:nth-child(2){text-align:left}
+.grouped-head + tbody td:first-child{text-align:center;width:44px}
+.grouped-head + tbody td:nth-child(2){white-space:nowrap}
 .total td{font-weight:700;background:#faf8fd}
 #status{font-size:13px;color:#716881}
 @media(max-width:650px){.header-logo{width:56px;height:56px}.header-content{gap:12px}.summary{grid-template-columns:1fr}.card{padding:15px}.card strong{font-size:26px}section{padding:14px}}
@@ -41,7 +47,10 @@ tr:last-child td{border-bottom:0}
   <section>
     <h2>Stock LHP per Jenis</h2>
     <div class="tablewrap"><table>
-      <thead><tr><th>Jenis Kayu</th><th class="num">40–49 BTG</th><th class="num">40–49 VOL</th><th class="num">50–59 BTG</th><th class="num">50–59 VOL</th><th class="num">60+ BTG</th><th class="num">60+ VOL</th><th class="num">Total BTG</th><th class="num">Total VOL</th></tr></thead>
+      <thead class="grouped-head">
+        <tr><th rowspan="2">No.</th><th rowspan="2">Jenis Kayu</th><th colspan="2">40–49 CM</th><th colspan="2">50–59 CM</th><th colspan="2">60 CM UP</th><th colspan="2">JUMLAH</th></tr>
+        <tr><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th></tr>
+      </thead>
       <tbody id="stockRows"></tbody>
     </table></div>
   </section>
@@ -49,7 +58,10 @@ tr:last-child td{border-bottom:0}
   <section>
     <h2>Pemiliran per Jenis</h2>
     <div class="tablewrap"><table>
-      <thead><tr><th>Jenis Kayu</th><th class="num">40–49 BTG</th><th class="num">40–49 VOL</th><th class="num">50–59 BTG</th><th class="num">50–59 VOL</th><th class="num">60+ BTG</th><th class="num">60+ VOL</th><th class="num">Total BTG</th><th class="num">Total VOL</th></tr></thead>
+      <thead class="grouped-head">
+        <tr><th rowspan="2">No.</th><th rowspan="2">Jenis Kayu</th><th colspan="2">40–49 CM</th><th colspan="2">50–59 CM</th><th colspan="2">60 CM UP</th><th colspan="2">JUMLAH</th></tr>
+        <tr><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th><th>BTG</th><th>VOL</th></tr>
+      </thead>
       <tbody id="pemRows"></tbody>
     </table></div>
   </section>
@@ -73,11 +85,11 @@ const vol=v=>Number(v||0).toLocaleString('id-ID',{minimumFractionDigits:2,maximu
 const btg=v=>Number(v||0).toLocaleString('id-ID',{maximumFractionDigits:0});
 let details=[];
 function makeJenisRows(rows,target){
-  $(target).replaceChildren(...rows.map(r=>{
+  $(target).replaceChildren(...rows.map((r,index)=>{
     let tr=document.createElement('tr');
     if(r.jenis.startsWith('TOTAL')) tr.className='total';
-    let vals=[r.jenis,btg(r.btg_40_49),vol(r.vol_40_49),btg(r.btg_50_59),vol(r.vol_50_59),btg(r.btg_60_up),vol(r.vol_60_up),btg(r.total_btg),vol(r.total_vol)];
-    vals.forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i>0)td.className='num';tr.append(td)});
+    let vals=[r.jenis.startsWith('TOTAL')?'':String(index+1),r.jenis,btg(r.btg_40_49),vol(r.vol_40_49),btg(r.btg_50_59),vol(r.vol_50_59),btg(r.btg_60_up),vol(r.vol_60_up),btg(r.total_btg),vol(r.total_vol)];
+    vals.forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i>1)td.className='num';tr.append(td)});
     return tr;
   }));
 }
